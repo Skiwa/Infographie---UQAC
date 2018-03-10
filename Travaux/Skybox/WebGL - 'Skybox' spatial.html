@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>WebGL - "Skybox" spatial</title>
+
+
+<script type="x-shader/x-vertex" id="vshaderbox">
+     uniform mat4 projection;
+     uniform mat4 modelview;
+
+     attribute vec3 vcoords;
+     attribute vec3 vnormal;
+     attribute vec2 vtexcoord;
+
+     varying vec3 fCoords;
+
+     void main() {
+        vec2 tmp = vtexcoord;
+        vec3 tmp2 = vnormal;
+   // inserted only to map texcoord and normal in this shader 
+   // (required since models uses texture coordinates even though 
+   //   we will not use them in this shader)
+
+        vec4 eyeCoords = modelview * vec4(vcoords,1.0);
+        gl_Position = projection * eyeCoords;
+        fCoords = vcoords;//gl_Position.xyz;
+     }
+</script>
+
+<script type="x-shader/x-fragment" id="fshaderbox">
+     precision mediump float;
+
+     varying vec3 fCoords;
+
+     uniform samplerCube skybox;
+
+     void main() {
+          gl_FragColor = textureCube(skybox, fCoords);
+     }
+</script>
+
+
+<script type="text/javascript" src="WebGL%20-%20'Skybox'%20spatial_files/simple-rotator.js"></script>
+<script type="text/javascript" src="WebGL%20-%20'Skybox'%20spatial_files/basic-objects-IFS.js"></script><style>@media print {#ghostery-purple-box {display:none !important}}</style>
+<script type="text/javascript" src="WebGL%20-%20'Skybox'%20spatial_files/MV.js"></script>
+<script type="text/javascript" src="WebGL%20-%20'Skybox'%20spatial_files/space-skybox.js"></script>
+
+</head>
+<body style="background-color:#DDD" cz-shortcut-listen="true">
+
+<h2>WebGL - "Skybox" spatial</h2>
+
+<noscript><hr><h3>This page requires Javascript and a web browser that supports WebGL</h3><hr></noscript>
+
+<p id="message" style="font-weight:bold">Cliquez et déplacez votre souris pour faire tourner l'environnement.</p>
+
+
+<div>
+
+    <canvas width="800" height="800" id="glcanvas" style="background-color:blue"></canvas>
+
+</div>
+
+
+
+</body></html>

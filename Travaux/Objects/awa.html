@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>WebGL - Application de textures (classique + environnementale) -&gt; texture2D utilisé plutôt que textureCube</title>
+
+
+<script type="x-shader/x-vertex" id="vshader">
+     uniform mat4 projection;
+     uniform mat4 modelview;
+
+     attribute vec3 vcoords;
+     attribute vec3 vnormal;
+     attribute  vec2 vtexcoord;
+
+     varying vec2 fTexCoord;
+
+     void main() {
+		vec3 tmp = vnormal;  // only to locate the normal attribute
+		
+        vec4 eyeCoords = modelview * vec4(vcoords,1.0);
+        gl_Position = projection * eyeCoords;
+        fTexCoord = vtexcoord;
+     }
+</script>
+
+<script type="x-shader/x-fragment" id="fshader">
+     precision mediump float;
+
+     varying vec2 fTexCoord;
+
+     uniform sampler2D texture;
+
+     void main() {
+
+          gl_FragColor = texture2D( texture, fTexCoord );
+                   // texture coordinates for the teapot already
+                   // refer to a cubemap
+     }
+</script>
+
+<script type="x-shader/x-vertex" id="vshadermap">
+     uniform mat4 projection;
+     uniform mat4 modelview;
+
+     attribute vec3 vcoords;
+     attribute vec3 vnormal;
+     attribute  vec2 vtexcoord;
+
+     varying vec3 fviewCoords;
+     varying vec3 fNormal;
+
+     void main() {
+        vec2 tmp = vtexcoord;
+   // inserted only to map texcoord in this shader (required
+   // since models uses texture coordinates even though we will 
+   // not use them in environmental mapping)
+
+        vec4 eyeCoords = modelview * vec4(vcoords,1.0);
+        gl_Position = projection * eyeCoords;
+        fviewCoords = eyeCoords.xyz;
+        fNormal = vnormal;
+     }
+</script>
+<script type="x-shader/x-fragment" id="fshadermap">
+     precision mediump float;
+
+     varying vec3 fNormal;
+     varying vec3 fviewCoords;
+
+     uniform samplerCube skybox;
+     uniform mat3 normalMatrix;
+
+     void main() {
+          vec3 N = normalMatrix * fNormal;
+          vec3 V = -fviewCoords;
+          vec3 R = -reflect(V,N);
+// alternative way of computing the reflected ray
+//          vec3 R = 2.0 * dot(V,N) * N - V; 
+
+          gl_FragColor = textureCube(skybox, R);
+     }
+</script>
+
+
+<script type="text/javascript" src="WebGL%20-%20Application%20de%20textures%20(classique%20+%20environnementale)%20-)%20texture2D%20utilis%C3%A9%20plut%C3%B4t%20que%20textureCube_files/simple-rotator.js"></script><style>@media print {#ghostery-purple-box {display:none !important}}</style>
+<script type="text/javascript" src="WebGL%20-%20Application%20de%20textures%20(classique%20+%20environnementale)%20-)%20texture2D%20utilis%C3%A9%20plut%C3%B4t%20que%20textureCube_files/basic-objects-IFS.js"></script>
+<script type="text/javascript" src="WebGL%20-%20Application%20de%20textures%20(classique%20+%20environnementale)%20-)%20texture2D%20utilis%C3%A9%20plut%C3%B4t%20que%20textureCube_files/MV.js"></script>
+<script type="text/javascript" src="WebGL%20-%20Application%20de%20textures%20(classique%20+%20environnementale)%20-)%20texture2D%20utilis%C3%A9%20plut%C3%B4t%20que%20textureCube_files/texture-model2.js"></script>
+
+</head>
+<body style="background-color:#DDD" cz-shortcut-listen="true">
+
+<h2>WebGL - Application de textures (classique + environnementale) -&gt; texture2D utilisé plutôt que textureCube</h2>
+
+<noscript><hr><h3>This page requires Javascript and a web browser that supports WebGL</h3><hr></noscript>
+
+<p id="message" style="font-weight:bold">Cliquez et déplacez votre souris pour faire tourner les objets.</p>
+
+
+<div>
+
+    <canvas width="600" height="600" id="glcanvas" style="background-color:blue"></canvas>
+
+</div>
+
+
+
+</body></html>
